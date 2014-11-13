@@ -286,15 +286,6 @@
           }
         }
       }
-    },
-    "karma-angular-templating-html2js-preprocessor": {
-      "version": "https://github.com/Sanjo/karma-angular-templating-html2js-preprocessor/archive/b1d6c26d46e4d8dad50432692cdb9714e9ae17a2.tar.gz"
-    },
-    "karma-chrome-launcher": {
-      "version": "0.1.5"
-    },
-    "karma-jasmine": {
-      "version": "0.2.2"
     }
   }
 }
