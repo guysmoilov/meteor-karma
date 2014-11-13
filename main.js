@@ -4,7 +4,7 @@ Karma = {
   server: {
     start: function (options, callback) {
       options = options || {}
-      options = loadPlugins(options)
+      options = KarmaInternals.loadPlugins(options)
 
       return karma.server.start(options, function (exitCode) {
         console.log('Karma start has exited with ' + exitCode)
@@ -17,7 +17,7 @@ Karma = {
   runner: {
     run: function (options, callback) {
       options = options || {}
-      options = loadPlugins(options)
+      options = KarmaInternals.loadPlugins(options)
 
       return karma.runner.run(options, function(exitCode) {
         console.log('Karma run has exited with ' + exitCode)
