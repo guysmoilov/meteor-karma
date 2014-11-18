@@ -6,12 +6,13 @@ Karma = {
       options = options || {}
       options = KarmaInternals.loadPlugins(options)
 
-      return karma.server.start(options, function (exitCode) {
-        console.log('Karma start has exited with ' + exitCode)
-        if (_.isFunction(callback)) {
-          callback.apply(this, arguments)
-        }
-      });
+      if (_.isFunction(callback)) {
+        callback = Meteor.bindEnvironment(callback, 'karma.server.start callback')
+      } else {
+        callback = function () {}
+      }
+
+      return karma.server.start(options, callback)
     }
   },
   runner: {
@@ -19,12 +20,13 @@ Karma = {
       options = options || {}
       options = KarmaInternals.loadPlugins(options)
 
-      return karma.runner.run(options, function(exitCode) {
-        console.log('Karma run has exited with ' + exitCode)
-        if (_.isFunction(callback)) {
-          callback.apply(this, arguments)
-        }
-      });
+      if (_.isFunction(callback)) {
+        callback = Meteor.bindEnvironment(callback, 'karma.runner.run callback')
+      } else {
+        callback = function () {}
+      }
+
+      return karma.runner.run(options, callback)
     }
   },
   plugins: {
@@ -32,7 +34,7 @@ Karma = {
       KarmaInternals.karmaPlugins[pluginName] = pluginObject
     }
   }
-};
+}
 
 KarmaInternals = {
   karmaPlugins: {},
