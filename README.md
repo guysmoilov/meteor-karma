@@ -4,7 +4,8 @@ See [http://karma-runner.github.io/0.12/index.html] for more info on Karma Runne
 
 ## API
 
-`Karma.start(id, options)`: Starts a long running Karma server that will close when the Meteor App is closed.
+* `Karma.start(id, options)`: Starts a long running Karma server that will close when the Meteor App is closed.
+* `Karma.setConfig(id, options)`: Sets the config for the Karma server. A running Karma server will reload and use the new config.
 
 For possible options see [http://karma-runner.github.io/0.12/config/configuration-file.html].
 
