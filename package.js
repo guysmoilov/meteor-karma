@@ -1,7 +1,7 @@
 Package.describe({
   name: 'sanjo:karma',
   summary: 'Integrates Karma into Meteor',
-  version: '1.0.0',
+  version: '1.1.0',
   git: 'https://github.com/Sanjo/meteor-karma.git'
 })
 
@@ -11,7 +11,7 @@ Npm.depends({
   'karma-jasmine': '0.2.3',
   'karma-coffee-preprocessor': '0.2.1',
   'karma-phantomjs-launcher-nonet': '0.1.3',
-  'temp': '0.8.1'
+  'fs-extra': '0.12.0'
 })
 
 Package.onUse(function (api) {

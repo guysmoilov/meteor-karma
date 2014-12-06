@@ -1,6 +1,5 @@
 var path = Npm.require('path')
-var temp = Npm.require('temp').track()
-var fs = Npm.require('fs')
+var fs = Npm.require('fs-extra')
 
 log = loglevel.createPackageLogger('[sanjo:karma]', process.env.KARMA_LOG_LEVEL || 'info')
 
@@ -13,9 +12,8 @@ Karma = {
 }
 
 KarmaInternals = {
-
   startKarmaServer: function (id, options) {
-    var configPath = KarmaInternals.writeKarmaConfig(options)
+    var configPath = KarmaInternals.writeKarmaConfig(id, options)
     var karmaChild = practical.ChildProcessFactory.get()
     var spawnOptions = {
       taskName: id,
@@ -27,23 +25,33 @@ KarmaInternals = {
     return karmaChild
   },
 
-  writeKarmaConfig: function (options) {
+  writeKarmaConfig: function (id, options) {
+    var configPath = KarmaInternals.getConfigPath(id)
     var config = 'module.exports = function(config) {\n' +
       '  config.set(' +
       JSON.stringify(options, null, 2) +
       ');\n};'
-    var tempConfigFile = temp.openSync()
-    fs.writeSync(tempConfigFile.fd, config)
-    fs.closeSync(tempConfigFile.fd)
+    fs.outputFileSync(configPath, config)
 
-    return tempConfigFile.path
+    return configPath
+  },
+
+  getConfigPath: function (id) {
+    return path.join(
+      KarmaInternals.getAppPath(),
+      '.meteor/local/karma/' + id + '.config.js'
+    )
+  },
+
+  getAppPath: function () {
+    return path.resolve(findAppDir())
   },
 
   getKarmaPath: function () {
     // TODO: Use sanjo:assets-path-resolver when available
-    return path.resolve(path.join(
-      findAppDir(),
+    return path.join(
+      KarmaInternals.getAppPath(),
       '.meteor/local/build/programs/server/npm/sanjo:karma/node_modules/karma/bin/karma'
-    ))
+    )
   }
 }
