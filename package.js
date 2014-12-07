@@ -6,9 +6,9 @@ Package.describe({
 })
 
 Npm.depends({
-  'karma': '0.12.24',
-  'karma-chrome-launcher': '0.1.5',
-  'karma-jasmine': '0.2.3',
+  'karma': '0.12.28',
+  'karma-chrome-launcher': '0.1.7',
+  'karma-jasmine': '0.3.2',
   'karma-coffee-preprocessor': '0.2.1',
   'karma-phantomjs-launcher-nonet': '0.1.3',
   'fs-extra': '0.12.0'
@@ -23,9 +23,11 @@ Package.onUse(function (api) {
 
   api.addFiles([
     'lib/meteor/files.js',
-    'lib/ChildProcessFactory.coffee',
+    'lib/LongRunningChildProcess.coffee',
     'main.js'
   ], 'server')
+
+  api.addFiles(['lib/spawnScript.js'], 'server', {isAsset: true})
 
   api.export('Karma')
   api.export('KarmaInternals')

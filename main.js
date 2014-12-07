@@ -6,26 +6,34 @@ log = loglevel.createPackageLogger('[sanjo:karma]', process.env.KARMA_LOG_LEVEL 
 Karma = {
   start: function (id, options) {
     options = options || {}
+    log.debug('Karma.start', id)
 
-    var config = KarmaInternals.generateKarmaConfig(options)
-    KarmaInternals.writeKarmaConfig(id, config)
+    Karma.setConfig(id, options)
 
     return KarmaInternals.startKarmaServer(id, options)
   },
 
   setConfig: function (id, options) {
+    log.debug('Karma.setConfig', id)
+
     var oldConfig = KarmaInternals.readKarmaConfig(id)
     var newConfig = KarmaInternals.generateKarmaConfig(options)
 
     if (!oldConfig || newConfig !== oldConfig) {
+      log.debug('New config is different from the old one.')
+      log.debug(oldConfig)
+      log.debug(newConfig)
       KarmaInternals.writeKarmaConfig(id, newConfig)
 
       // Restart running Karma server when config has changed
-      var existingKarmaChild = KarmaInternals.getKarmaChild(id)
-      if (existingKarmaChild) {
-        existingKarmaChild.kill()
+      var karmaChild = KarmaInternals.getKarmaChild(id)
+      if (karmaChild.isRunning()) {
+        log.debug('Restarting Karma server to reload config.')
+        karmaChild.kill()
         KarmaInternals.startKarmaServer(id)
       }
+    } else {
+      log.debug('New config is exactly the same as the old one.')
     }
   }
 }
@@ -34,7 +42,13 @@ KarmaInternals = {
   karmaChilds: {},
 
   getKarmaChild: function (id) {
-    return KarmaInternals.karmaChilds[id]
+    var karmaChild = KarmaInternals.karmaChilds[id]
+    if (!karmaChild) {
+      karmaChild = new sanjo.LongRunningChildProcess(id)
+      KarmaInternals.setKarmaChild(id, karmaChild)
+    }
+
+    return karmaChild
   },
 
   setKarmaChild: function (id, karmaChild) {
@@ -42,23 +56,17 @@ KarmaInternals = {
   },
 
   startKarmaServer: function (id) {
+    log.debug('KarmaInternals.startKarmaServer(' + id + ')')
     var karmaChild = KarmaInternals.getKarmaChild(id)
-    if (!karmaChild || !karmaChild.isRunning()) {
-      karmaChild = KarmaInternals.createKarmaServer(id)
-      KarmaInternals.setKarmaChild(id, karmaChild)
-    }
-
-    return karmaChild
-  },
-
-  createKarmaServer: function (id) {
-    var karmaChild = new LongRunningChildProcess(id)
     var configPath = KarmaInternals.getConfigPath(id)
     var spawnOptions = {
       command: KarmaInternals.getKarmaPath(),
       args: ['start', configPath]
     }
+    // It will only spawn when the process is not already running
     karmaChild.spawn(spawnOptions)
+
+    return karmaChild
   },
 
   writeKarmaConfig: function (id, config) {
@@ -78,7 +86,7 @@ KarmaInternals = {
   readKarmaConfig: function (id) {
     var configPath = KarmaInternals.getConfigPath(id)
     try {
-      return fs.readFileSync(configPath)
+      return fs.readFileSync(configPath, {encoding: 'utf8'})
     } catch (error) {
       return null;
     }
