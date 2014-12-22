@@ -144,7 +144,8 @@ class sanjo.LongRunningChildProcess
 
     log.debug("LongRunningChildProcess.spawn is spawning '#{command}'")
 
-    @child = spawn('node', commandArgs, spawnOptions)
+    nodePath = process.execPath
+    @child = spawn(nodePath, commandArgs, spawnOptions)
     @dead = false
     @_setPid(@child.pid)
 
