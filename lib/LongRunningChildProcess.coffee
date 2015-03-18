@@ -141,10 +141,9 @@ class sanjo.LongRunningChildProcess
 
     nodePath = process.execPath
     nodeDir = path.dirname(nodePath)
-    env = _.extend({
-      # Expose the Meteor node binary path for the script that is run
-      PATH: nodeDir + ':' + process.env.PATH
-    }, process.env)
+    # Expose the Meteor node binary path for the script that is run
+    env = process.env
+    env.PATH = nodeDir + ':' + process.env.PATH
 
     spawnOptions = {
       cwd: @_getMeteorAppPath(),
