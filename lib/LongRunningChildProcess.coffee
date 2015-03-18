@@ -139,9 +139,16 @@ class sanjo.LongRunningChildProcess
     @fout = fs.openSync(logFile, 'w')
     #@ferr = fs.openSync(logFile, 'w')
 
+    nodePath = process.execPath
+    nodeDir = path.dirname(nodePath)
+    env = _.extend({
+      # Expose the Meteor node binary path for the script that is run
+      PATH: nodeDir + ':' + process.env.PATH
+    }, process.env)
+
     spawnOptions = {
       cwd: @_getMeteorAppPath(),
-      env: process.env,
+      env: env,
       detached: true,
       stdio: ['ignore', @fout, @fout]
     }
@@ -152,7 +159,6 @@ class sanjo.LongRunningChildProcess
 
     log.debug("LongRunningChildProcess.spawn is spawning '#{command}'")
 
-    nodePath = process.execPath
     @child = spawn(nodePath, commandArgs, spawnOptions)
     @dead = false
     @_setPid(@child.pid)
